@@ -1,64 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Valentine's Day for Nolawit Solomon</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background: linear-gradient(135deg, #ffafbd, #ffc3a0); min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; overflow-x: hidden; }
-        .container { background-color: rgba(255, 255, 255, 0.95); border-radius: 20px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); width: 100%; max-width: 800px; padding: 40px; text-align: center; position: relative; overflow: hidden; }
-        .hearts { position: absolute; width: 100%; height: 100%; top: 0; left: 0; pointer-events: none; }
-        .heart { position: absolute; color: #ff4081; font-size: 24px; opacity: 0; animation: float 5s linear infinite; }
-        @keyframes float { 0% { transform: translateY(100vh) rotate(0deg); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(-100px) rotate(360deg); opacity: 0; } }
-        h1 { color: #d81b60; font-size: 2.8rem; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1); }
-        h2 { color: #ad1457; font-size: 2.2rem; margin-bottom: 30px; font-weight: 600; }
-        .question { font-size: 1.8rem; color: #555; margin: 40px 0; font-weight: 500; }
-        .buttons-container { display: flex; justify-content: center; gap: 30px; margin: 50px 0; position: relative; min-height: 120px; }
-        .yes-btn { background-color: #4CAF50; color: white; border: none; padding: 18px 45px; font-size: 1.8rem; border-radius: 50px; cursor: pointer; box-shadow: 0 6px 0 #388E3C; transition: all 0.2s; z-index: 10; position: relative; font-weight: bold; }
-        .yes-btn:hover { background-color: #43A047; transform: translateY(-3px); box-shadow: 0 9px 0 #388E3C; }
-        .yes-btn:active { transform: translateY(3px); box-shadow: 0 3px 0 #388E3C; }
-        .no-btn { background-color: #f44336; color: white; border: none; padding: 18px 45px; font-size: 1.8rem; border-radius: 50px; cursor: pointer; box-shadow: 0 6px 0 #d32f2f; transition: all 0.1s; position: absolute; font-weight: bold; }
-        .response-message { background-color: #fce4ec; border-radius: 15px; padding: 30px; margin-top: 40px; display: none; animation: fadeIn 1s; border-left: 6px solid #d81b60; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .response-message h3 { color: #d81b60; font-size: 2rem; margin-bottom: 15px; }
-        .response-message p { font-size: 1.5rem; color: #333; line-height: 1.6; }
-        .emoji { font-size: 3rem; margin: 20px 0; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
-        .instructions { margin-top: 30px; color: #666; font-style: italic; font-size: 1.1rem; }
-        footer { margin-top: 40px; color: #888; font-size: 1rem; }
-        @media (max-width: 768px) {
-            .container { padding: 30px 20px; } h1 { font-size: 2.2rem; } h2 { font-size: 1.8rem; } 
-            .question { font-size: 1.5rem; } .yes-btn, .no-btn { padding: 15px 35px; font-size: 1.5rem; } 
-            .buttons-container { min-height: 150px; }
-        }
-        @media (max-width: 480px) {
-            h1 { font-size: 1.8rem; } h2 { font-size: 1.5rem; } .question { font-size: 1.3rem; }
-            .buttons-container { flex-direction: column; align-items: center; gap: 20px; }
-            .yes-btn, .no-btn { width: 80%; padding: 15px; }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="hearts" id="hearts-container"></div>
-        <h1>💝 Valentine's Day Proposal 💝</h1>
-        <h2>For Nolawit Solomon</h2>
-        <div class="question">Will you be my Valentine, Nolawit Solomon?</div>
-        <div class="buttons-container">
-            <button class="yes-btn" id="yesBtn">YES</button>
-            <button class="no-btn" id="noBtn">NO</button>
-        </div>
-        <div class="instructions">Hint: Try to click the NO button if you can! 😉</div>
-        <div class="response-message" id="responseMessage">
-            <h3>Yay! You said YES! 💖</h3>
-            <p>I knew you were going to say Yes, so let us meet at my place! 🥰</p>
-            <div class="emoji">💑🎉💕</div>
-            <p>I'll prepare a special Valentine's surprise just for you!</p>
-        </div>
-        <footer>Made with ❤️ for Nolawit Solomon</footer>
-    </div>
-
     <script>
         // Create floating hearts
         const heartsContainer = document.getElementById('hearts-container');
@@ -78,25 +17,137 @@
         const responseMessage = document.getElementById('responseMessage');
         const buttonsContainer = document.querySelector('.buttons-container');
         
-        // Make the NO button move away from cursor
+        // Make NO button impossible to click - IMPROVED VERSION
+        let isRunningAway = false;
+        let escapeTimeout;
+        
+        // Function to move NO button to a random safe position
+        function escapeToRandomPosition() {
+            if (isRunningAway) return;
+            
+            isRunningAway = true;
+            const containerRect = buttonsContainer.getBoundingClientRect();
+            
+            // Calculate new random position that's far from current position
+            const currentX = parseFloat(noBtn.style.left) || 0;
+            const currentY = parseFloat(noBtn.style.top) || 0;
+            
+            let newX, newY;
+            let attempts = 0;
+            
+            // Keep trying until we find a position far enough from current
+            do {
+                newX = Math.random() * (containerRect.width - 200) + 50;
+                newY = Math.random() * (containerRect.height - 80) + 40;
+                attempts++;
+                
+                // If we can't find a good position after 10 tries, just take any
+                if (attempts > 10) break;
+                
+            } while (Math.abs(newX - currentX) < 100 && Math.abs(newY - currentY) < 80);
+            
+            // Add some random offset to make it more unpredictable
+            newX += (Math.random() - 0.5) * 50;
+            newY += (Math.random() - 0.5) * 30;
+            
+            // Ensure it stays within bounds
+            newX = Math.max(20, Math.min(containerRect.width - 120, newX));
+            newY = Math.max(20, Math.min(containerRect.height - 60, newY));
+            
+            // Animate the movement
+            noBtn.style.transition = 'all 0.3s ease-out';
+            noBtn.style.left = `${newX}px`;
+            noBtn.style.top = `${newY}px`;
+            
+            // Reset after movement
+            setTimeout(() => {
+                isRunningAway = false;
+                noBtn.style.transition = 'all 0.2s ease-out';
+            }, 300);
+        }
+        
+        // Track cursor proximity and move button BEFORE cursor gets too close
         document.addEventListener('mousemove', (e) => {
+            if (isRunningAway) return;
+            
             const noBtnRect = noBtn.getBoundingClientRect();
-            const noBtnCenterX = noBtnRect.left + noBtnRect.width / 2;
-            const noBtnCenterY = noBtnRect.top + noBtnRect.height / 2;
-            const distanceX = e.clientX - noBtnCenterX;
-            const distanceY = e.clientY - noBtnCenterY;
+            const containerRect = buttonsContainer.getBoundingClientRect();
+            
+            // Calculate distance from cursor to button center
+            const btnCenterX = noBtnRect.left + noBtnRect.width / 2;
+            const btnCenterY = noBtnRect.top + noBtnRect.height / 2;
+            const distanceX = e.clientX - btnCenterX;
+            const distanceY = e.clientY - btnCenterY;
             const distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
             
-            if (distance < 150) {
-                const containerRect = buttonsContainer.getBoundingClientRect();
-                let newX = noBtnCenterX - distanceX * 2;
-                let newY = noBtnCenterY - distanceY * 2;
-                newX = Math.max(50, Math.min(containerRect.width - 50, newX));
-                newY = Math.max(50, Math.min(containerRect.height - 50, newY));
-                noBtn.style.left = `${newX - noBtnRect.width / 2}px`;
-                noBtn.style.top = `${newY - noBtnRect.height / 2}px`;
+            // If cursor is getting close (200px), run away!
+            if (distance < 200) {
+                // Clear any previous timeout
+                if (escapeTimeout) clearTimeout(escapeTimeout);
+                
+                // Run away immediately if very close
+                if (distance < 100) {
+                    escapeToRandomPosition();
+                } else {
+                    // If somewhat close, run away after a short delay
+                    escapeTimeout = setTimeout(() => {
+                        escapeToRandomPosition();
+                    }, 200);
+                }
+                
+                // Also push button away from cursor direction
+                if (distance < 150) {
+                    const pushForce = 1.5;
+                    const newX = parseFloat(noBtn.style.left) - (distanceX * pushForce / distance) * 10;
+                    const newY = parseFloat(noBtn.style.top) - (distanceY * pushForce / distance) * 10;
+                    
+                    // Keep within bounds
+                    const boundedX = Math.max(20, Math.min(containerRect.width - 120, newX));
+                    const boundedY = Math.max(20, Math.min(containerRect.height - 60, newY));
+                    
+                    noBtn.style.left = `${boundedX}px`;
+                    noBtn.style.top = `${boundedY}px`;
+                }
             }
         });
+        
+        // Also run away if cursor touches button area
+        noBtn.addEventListener('mouseenter', () => {
+            escapeToRandomPosition();
+        });
+        
+        // Run away on touch for mobile devices
+        noBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            escapeToRandomPosition();
+            
+            // Also move it extra far for mobile
+            setTimeout(escapeToRandomPosition, 100);
+        });
+        
+        // Make button jiggle occasionally to attract attention
+        function jiggleButton() {
+            if (isRunningAway) return;
+            
+            const currentX = parseFloat(noBtn.style.left) || 0;
+            const currentY = parseFloat(noBtn.style.top) || 0;
+            
+            // Small random movement
+            noBtn.style.transition = 'all 0.1s ease-out';
+            noBtn.style.left = `${currentX + (Math.random() - 0.5) * 10}px`;
+            noBtn.style.top = `${currentY + (Math.random() - 0.5) * 10}px`;
+            
+            setTimeout(() => {
+                if (!isRunningAway) {
+                    noBtn.style.transition = 'all 0.1s ease-out';
+                    noBtn.style.left = `${currentX}px`;
+                    noBtn.style.top = `${currentY}px`;
+                }
+            }, 100);
+        }
+        
+        // Jiggle every 3-8 seconds randomly
+        setInterval(jiggleButton, 3000 + Math.random() * 5000);
         
         // Handle YES button click
         yesBtn.addEventListener('click', () => {
@@ -107,14 +158,49 @@
             yesBtn.style.backgroundColor = "#D81B60";
             yesBtn.style.boxShadow = "0 6px 0 #AD1457";
             yesBtn.disabled = true;
+            
+            // Stop all button movements
+            isRunningAway = true;
         });
         
-        // Handle NO button click
+        // Handle NO button click (virtually impossible now!)
         noBtn.addEventListener('click', () => {
-            alert("Oops! You actually clicked NO? Let's try that again... 😉");
-            const containerRect = buttonsContainer.getBoundingClientRect();
-            noBtn.style.left = `${Math.random() * (containerRect.width - 200) + 100}px`;
-            noBtn.style.top = `${Math.random() * (containerRect.height - 100) + 50}px`;
+            // Make it even harder by moving immediately
+            escapeToRandomPosition();
+            
+            // Playful message if somehow clicked
+            const messages = [
+                "Nice try! But I'm too fast! 🏃‍♂️",
+                "Almost! But not quite! 😉",
+                "Too slow! Try again! 🐢",
+                "Getting closer... but not close enough! 😄",
+                "The YES button is looking lonely! 💚"
+            ];
+            
+            const randomMsg = messages[Math.floor(Math.random() * messages.length)];
+            
+            // Create a temporary message
+            const tempMsg = document.createElement('div');
+            tempMsg.textContent = randomMsg;
+            tempMsg.style.position = 'fixed';
+            tempMsg.style.top = '50%';
+            tempMsg.style.left = '50%';
+            tempMsg.style.transform = 'translate(-50%, -50%)';
+            tempMsg.style.background = 'rgba(0,0,0,0.8)';
+            tempMsg.style.color = 'white';
+            tempMsg.style.padding = '10px 20px';
+            tempMsg.style.borderRadius = '10px';
+            tempMsg.style.zIndex = '1000';
+            tempMsg.style.fontSize = '1.2rem';
+            
+            document.body.appendChild(tempMsg);
+            
+            setTimeout(() => {
+                tempMsg.remove();
+            }, 1500);
+            
+            // Move button far away again
+            setTimeout(escapeToRandomPosition, 300);
         });
         
         // Celebration effect
@@ -155,9 +241,11 @@
         window.addEventListener('load', () => {
             const containerRect = buttonsContainer.getBoundingClientRect();
             noBtn.style.position = 'absolute';
-            noBtn.style.left = `${Math.random() * (containerRect.width - 200) + 100}px`;
-            noBtn.style.top = `${Math.random() * (containerRect.height - 100) + 50}px`;
+            
+            // Start at random position
+            escapeToRandomPosition();
+            
+            // Also move it once after a second (to surprise user)
+            setTimeout(escapeToRandomPosition, 1000);
         });
     </script>
-</body>
-</html>
